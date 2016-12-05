@@ -699,26 +699,12 @@ c1
                   stop
             end if
 c1
-c      allocate(arrayIndex(nxyz),stat=test)
-c            if(test.ne.0)then
-c                  write(*,*)'ERROR 1: Allocation failed due to ',
-c     +                  'insufficient memory.'
-c                  stop
-c            end if
-c1
       allocate(indexSort(nxyz),stat=test)
             if(test.ne.0)then
                   write(*,*)'ERROR 1: Allocation failed due to ',
      +                  'insufficient memory.'
                   stop
             end if
-c1
-c      allocate(levelSort(nxyz),stat=test)
-c            if(test.ne.0)then
-c                  write(*,*)'ERROR 1: Allocation failed due to ',
-c     +                  'insufficient memory.'
-c                  stop
-c            end if
 c1
       allocate(cdfvalIndex(nxyz),stat=test)
             if(test.ne.0)then
@@ -1445,25 +1431,6 @@ c
                   order(ind) = ind
             end do
 
-c            do iii=1,nxyz
-c                  order(iii) = iii
-c                  if(iii.gt.1)then
-c                  if(order(iii-1).eq.order(iii))then
-cc                  print *,'INDEXBEF',(iii-1),order(iii-1)
-c                  order(iii)=order(iii-1)+1
-c                  end if
-c                  end if
-c            end do
-
-c            do iii=1,nxyz
-c                  if(iii.gt.1)then
-c                  if(order(iii-1).eq.order(iii))then
-c                  print *,'INDEXBEF',(iii-1),order(iii-1)
-c                  end if
-c                  end if
-c            end do
-
-
 c
 c The multiple grid search works with multiples of 4 (yes, that is
 c somewhat arbitrary):
@@ -1495,10 +1462,6 @@ c
             call system_clock(clock_stop,clock_rate,clock_max)
             print *,'TIME (random path)=',
      +    real(clock_stop-clock_start,kind=8)/real(clock_rate,kind=8) 
-
-c            do ind=1,nxyz
-c                  print *,'INDEXAFT',order(ind)
-c            end do
 
 c
 c Initialize the simulation:
@@ -1592,20 +1555,13 @@ c
  1004             format('   calculating level of node ',i9)
 c                  index = int(order(in)+0.5)
                   index = order(in)
-c                  print *,'INDEX',order(in)
 c
 c Do we really need to simulate this grid node location?
 c
 
-c                  if(index.eq.24948664)then
-c                       print *,'INDEX',sim(index),index
-c                  end if
-
 
                   if(sim(index).ne.UNEST)then
                         level(index) = 0
-c                        lock(index) = 1
-c                        print *,'DEBUG',sim(index),index
                         go to 20
                   end if
 
@@ -1613,7 +1569,6 @@ c                        print *,'DEBUG',sim(index),index
                         id = int(tmp(index)+0.5)
                         sim(index) = vr(id,MXCUT)
                         level(index) = 0
-c                        lock(index) = 1
                         go to 20
                   end if
 c
@@ -1649,11 +1604,6 @@ c                       end do
                   endif
 
                   icnode(:)=0
-c                  cnodex(:)=0.0
-c                  cnodey(:)=0.0
-c                  cnodez(:)=0.0
-c                  cnodev(:)=0.0
-c                  cnodet(:)=0.0
                   cnodeid(:)=-1
                   ncnode=0
 
@@ -1661,18 +1611,11 @@ c            call srchndUnroll(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
 c              call srchndList(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
 c                  call srchnd(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
 c       call srchndvectorized(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
-       call srchndvectorized2(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
-c              call srchndPush(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
+c       call srchndvectorized2(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
+              call srchndPush(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
      +        maxsec,nctx,ncty,nctz,nlooku,nodmax,nx,ny,nz,UNEST,
      +        xmn,ymn,zmn,xsiz,ysiz,zsiz,icnode,ixnode,iynode,iznode,
      +        cnodex,cnodey,cnodez,cnodev,cnodet,tmp,sim,cnodeid)
-
-c                  if(in.eq.100.or.in.eq.10000)then
-c                  print *,ncnode
-c                  print *,cnodeid(:)
-c                  print *,icnode(:)
-c                  end if
-
 
                   maxLevel = -1
                   do i=1,ncnode
@@ -1681,69 +1624,19 @@ c                  end if
                      end if
                   end do
 
-c                  if(ncnode.eq.0)then
-c                     level(index) = 0
-c                     ncnodeIndex(index)=0
-c                     icnodeIndex(:,index)=-1
-c                     cnodeidIndex(:,index)=-1
-c                     cnodexIndex(:,index)=-1.0
-c                     cnodeyIndex(:,index)=-1.0
-c                     cnodezIndex(:,index)=-1.0
-cc                     cnodevIndex(:,index)=-1.0
-c                     cnodetIndex(:,index)=-1.0
-c                  else
-c                     level(index) = maxLevel + 1 
-c                     ncnodeIndex(index)=ncnode
-c                     icnodeIndex(:,index)=icnode(:)
-c                     cnodeidIndex(:,index)=cnodeid(:)
-c                     cnodexIndex(:,index)=cnodex(:)
-c                     cnodeyIndex(:,index)=cnodey(:)
-c                     cnodezIndex(:,index)=cnodez(:)
-cc                     cnodevIndex(:,index)=cnodev(:)
-c                     cnodetIndex(:,index)=cnodet(:)
-c                  end if
-
                   if(ncnode.eq.0)then
                      level(index) = 0
                      ncnodeIndex(index)=0
                      icnodeIndex(:,index)=-1
                      cnodeidIndex(:,index)=-1
-c                     cnodetIndex(:,index)=-1.0
                   else
                      level(index) = maxLevel + 1 
                      ncnodeIndex(index)=ncnode
                      icnodeIndex(:,index)=icnode(:)
                      cnodeidIndex(:,index)=cnodeid(:)
-c                     cnodetIndex(:,index)=cnodet(:)
                   end if
 
-
-c                  if(ncnode.eq.0)then
-c                     level(index) = 0
-c                     ncnodeIndex(in)=0
-c                     icnodeIndex(:,in)=-1
-c                     cnodeidIndex(:,in)=-1
-c                     cnodexIndex(:,in)=-1.0
-c                     cnodeyIndex(:,in)=-1.0
-c                     cnodezIndex(:,in)=-1.0
-cc                     cnodevIndex(:,in)=-1.0
-c                     cnodetIndex(:,in)=-1.0
-c                  else
-c                     level(index) = maxLevel + 1 
-c                     ncnodeIndex(in)=ncnode
-c                     icnodeIndex(:,in)=icnode(:)
-c                     cnodeidIndex(:,in)=cnodeid(:)
-c                     cnodexIndex(:,in)=cnodex(:)
-c                     cnodeyIndex(:,in)=cnodey(:)
-c                     cnodezIndex(:,in)=cnodez(:)
-cc                     cnodevIndex(:,in)=cnodev(:)
-c                     cnodetIndex(:,in)=cnodet(:)
-c                  end if
-c                  mapIndexCount(index)=in
-
-
                   sim(index) = 999999.0
-c                  print *,'SIM',sim(index),index
 
                   cdfval = real(acorni(idum))
                   cdfvalIndex(index)=cdfval
@@ -1782,17 +1675,11 @@ c
                end do
                levelThreshold = levelThreshold + levelCount(lev+1)
 
-c               call sortem(levelStart(lev+1),
-c     + levelStart(lev+1)+levelCount(lev+1)-1,indexSort,0,b,c,d,e,f,g,h)
-               
-c               print *,'TAG level=',lev,'/',numberOfLevels,
-c     +      'levelCount=',levelCount(lev+1)
             end do
 
             levelThreshold = int(0.1*ceiling(real(levelThreshold)/
      +                           real(numberOfLevels-1)))
 
-c            print *,'TAG levelThreshold=',levelThreshold
 
             call system_clock(clock_stop,clock_rate,clock_max)
             print *,'TIME (make levels)=',
@@ -1993,25 +1880,14 @@ c$omp&        cnodezIndex,cnodevIndex,cnodetIndex,mapIndexCount,
 c$omp&        tmp,sim,order,covtab,beez,lock,numberOfLevels, 
 c$omp&        levelStart,levelCount,numThreads,invNumThreads)
 
-cc$omp parallel default(firstprivate)
-cc$omp& shared(x,y,z,vr,level,indexSort,
-cc$omp&        cdfvalIndex,
-cc$omp&        tmp,sim,order,covtab,beez,lock,numberOfLevels, 
-cc$omp&        levelStart,levelCount,numThreads,invNumThreads)
-
-
 #ifdef _OPENMP
             threadId=OMP_get_thread_num()+1
 #else
             threadId=1
 #endif
 
-c            do lev=1,3
             do lev=1,(numberOfLevels)
 
-c            if(threadId.eq.1)then
-c            call system_clock(clock_start,clock_rate,clock_max)
-c            end if
 
             levIni=levelStart(lev+1) 
             levFin=(levelStart(lev+1)+levelCount(lev+1)-1) 
@@ -2067,30 +1943,8 @@ c                             close(i) = real(actloc(iii))
 c                       end do
                   endif
 
-c                  icnode(:)=0
-c                  cnodex(:)=0.0
-c                  cnodey(:)=0.0
-c                  cnodez(:)=0.0
-c                  cnodev(:)=0.0
-c                  cnodet(:)=0.0
-c                  cnodeid(:)=0
-c                  ncnode=0
-
-
 c Instead of calling srchnd, we extract neighbour values from 
 c arrays ***Index(:), obtained before...
-
-c                  if(threadId.eq.4)then
-c                     print *,'path=',count,'index=',index
-c                  end if
-
-c                 ncnode = ncnodeIndex(index)
-c                 icnode(:) = icnodeIndex(:,index)
-c                 cnodex(:) = cnodexIndex(:,index)
-c                 cnodey(:) = cnodeyIndex(:,index)
-c                 cnodez(:) = cnodezIndex(:,index)
-c                 cnodet(:) = cnodetIndex(:,index)
-c                 cnodeid(:) = cnodeidIndex(:,index)
 
                  ncnode = ncnodeIndex(index)
                  icnode(:) = icnodeIndex(:,index)
@@ -2102,38 +1956,15 @@ c                 cnodeid(:) = cnodeidIndex(:,index)
      +        cnodex,cnodey,cnodez,cnodev,cnodet,tmp,sim,cnodeid)
 
 
-
-c                  mapIndexCountCache=mapIndexCount(index)
-c                  ncnode = ncnodeIndex(mapIndexCountCache)
-c                  icnode(:) = icnodeIndex(:,mapIndexCountCache)
-c                  cnodex(:) = cnodexIndex(:,mapIndexCountCache)
-c                  cnodey(:) = cnodeyIndex(:,mapIndexCountCache)
-c                  cnodez(:) = cnodezIndex(:,mapIndexCountCache)
-c                  cnodet(:) = cnodetIndex(:,mapIndexCountCache)
-c                  cnodeid(:) = cnodeidIndex(:,mapIndexCountCache)
-                     
-c                  ncnode = ncnodeIndex(index,threadId)
-c                  icnode(:) = icnodeIndex(:,index,threadId)
-c                  cnodex(:) = cnodexIndex(:,index,threadId)
-c                  cnodey(:) = cnodeyIndex(:,index,threadId)
-c                  cnodez(:) = cnodezIndex(:,index,threadId)
-c                  cnodet(:) = cnodetIndex(:,index,threadId)
-c                  cnodeid(:) = cnodeidIndex(:,index,threadId)
-
 c The values of cnodev are extracted from sim array using the
 c indexes obtained before
 
 
-c                  print *,'count=',count,'index=',index,'cnodeid=',
-c     + cnodeid(:)
                   ilock=0
                   do while(ilock.eq.0)
                      ilock=1
                      do i=1,ncnode
-c                     if(lev.gt.1)then
-c                     print *,'LOCK(',lev,')',count,':',lock(cnodeid(i)) 
                         ilock=ilock*lock(cnodeid(i))
-c                     end if
                      end do
                   end do
 
@@ -2163,68 +1994,6 @@ c
 
                         do ic=1,ncut
                               aclose(:)=0
-cc DEBUG
-c         if(index.eq.117511 .or. index.eq.143623)then
-c            print *,'TAG ix',ix
-c            print *,'TAG iy',iy
-c            print *,'TAG iz',iz
-c            print *,'TAG ic',ic
-c            print *,'TAG MAXCTX',MAXCTX
-c            print *,'TAG MAXCTY',MAXCTY
-c            print *,'TAG MAXCTZ',MAXCTZ
-c            print *,'TAG MAXKR1',MAXKR1
-c            print *,'TAG MAXROT',MAXROT
-c            print *,'TAG MAXDAT',MAXDAT
-c            print *,'TAG MXCUT',MXCUT
-c            print *,'TAG MAXKR2',MAXKR2
-c            print *,'TAG MAXNOD',MAXNOD
-c            print *,'TAG MAXCUT',MAXCUT
-c            print *,'TAG MAXXYZ',MAXXYZ
-c            print *,'TAG MAXXYZ',MAXNST
-c            print *,'TAG idbg',idbg
-c            print *,'TAG imbsim',imbsim
-c            print *,'TAG ivtype',ivtype
-c            print *,'TAG ktype',ktype
-c            print *,'TAG ldbg',ldbg
-c            print *,'TAG mik',mik
-c            print *,'TAG nclose',nclose
-c            print *,'TAG ncnode',ncnode
-c            print *,'TAG nctx',nctx
-c            print *,'TAG ncty',ncty
-c            print *,'TAG nctz',nctz
-c            print *,'TAG xx',xx
-c            print *,'TAG yy',yy
-c            print *,'TAG zz',zz
-c            print *,'TAG cdf(',ic,')',cdf(ic)
-c            print *,'TAG ccdf(',ic,')',ccdf(ic)
-c            print *,'TAG atnode',atnode
-c            print *,'TAG softdat',softdat
-c            print *,'TAG ...'
-c            print *,'TAG iznode',iznode
-c            print *,'TAG iynode',iynode
-c            print *,'TAG ixnode',ixnode
-c            print *,'TAG it',it
-c            print *,'TAG nst',nst
-c            print *,'TAG aclose',aclose
-c            print *,'TAG cnodex',cnodex
-c            print *,'TAG cnodey',cnodey
-c            print *,'TAG cnodez',cnodez
-c            print *,'TAG cnodev',cnodev
-c            print *,'TAG cnodet',cnodet
-c            print *,'TAG covtab',covtab
-c            print *,'TAG thres',thres
-c            print *,'TAG aa',aa
-c            print *,'TAG c0',c0
-c            print *,'TAG cmax',cmax
-c            print *,'TAG close',close
-c            print *,'TAG beez',beez
-c            print *,'TAG r',r
-c            print *,'TAG rr',rr
-c            print *,'TAG s',s
-c            print *,'TAG a',a
-c            print *,'TAG rotmat',rotmat
-c         end if
-cc DEBUG
 
       call krige(ix,iy,iz,ic,MAXCTX,MAXCTY,MAXCTZ,MAXKR1,
      + MAXROT,MAXDAT,MXCUT,MAXKR2,MAXNOD,MAXCUT,MAXXYZ,MAXNST,idbg,
@@ -2272,125 +2041,6 @@ c
             tmp(index) = 0.0 
 
            end do
-cc$omp barrier
-
-ccc           else
-ccc
-ccc           do count=levIni,levFin
-ccc            
-ccc                  index = indexSort(count)
-cccc
-cccc Location of the node we are currently working on:
-cccc
-ccc                  iz = int((index-1)/nxy) + 1
-ccc                  iy = int((index-(iz-1)*nxy-1)/nx) + 1
-ccc                  ix = index - (iz-1)*nxy - (iy-1)*nx
-ccc                  xx = xmn + real(ix-1)*xsiz
-ccc                  yy = ymn + real(iy-1)*ysiz
-ccc                  zz = zmn + real(iz-1)*zsiz
-cccc                  if(idbg.ge.3)
-cccc     +            write(ldbg,*) 'Working on grid index:',ix,iy,iz
-ccc
-cccc
-cccc Now, we'll simulate the point ix,iy,iz.  First, get the close data
-cccc and make sure that there are enough to actually simulate a value,
-cccc we'll only keep the closest "ndmax" data, and look for previously
-cccc simulated grid nodes:
-cccc
-ccc                  if(sstrat.eq.0) then
-ccc                        call srchsupr(xx,yy,zz,radsqd,isrot,MAXROT,
-ccc     +                       rotmat,nsbtosr,ixsbtosr,iysbtosr,
-ccc     +                       izsbtosr,noct,nd,x,y,z,tmpdat,nisb,nxsup,
-ccc     +                       xmnsup,xsizsup,nysup,ymnsup,ysizsup,
-ccc     +                       nzsup,zmnsup,zsizsup,nclose,close,
-ccc     +                       infoct)
-ccc                        if(nclose.gt.ndmax) nclose = ndmax
-cccc                       do i=1,nclose
-cccc                             iii = int(close(i)+0.5)
-cccc                             close(i) = real(actloc(iii))
-cccc                       end do
-ccc                  endif
-ccc
-ccc                  ncnode = ncnodeIndex(index)
-ccc                  icnode(:) = icnodeIndex(:,index)
-ccc                  cnodex(:) = cnodexIndex(:,index)
-ccc                  cnodey(:) = cnodeyIndex(:,index)
-ccc                  cnodez(:) = cnodezIndex(:,index)
-ccc                  cnodet(:) = cnodetIndex(:,index)
-ccc                  cnodeid(:) = cnodeidIndex(:,index)
-ccc
-ccc                  do i=1,ncnode
-ccc                     cnodev(i)=sim(cnodeid(i))
-ccc                  end do
-ccc
-cccc
-cccc What cdf value are we looking for?
-cccc
-ccc                  zval   = UNEST
-ccc                  cdfval = cdfvalIndex(index)
-cccc
-cccc Use the global distribution?
-cccc
-ccc
-ccc                  if((nclose+ncnode).le.0) then
-ccc                        call beyond(ivtype,ncut,thres,cdf,ng,gcut,gcdf,
-ccc     +                              zmin,zmax,ltail,ltpar,middle,mpar,
-ccc     +                              utail,utpar,zval,cdfval,ierr)
-ccc
-ccc                  else
-cccc
-cccc Estimate the local distribution by indicator kriging:
-cccc
-ccc
-ccc                        do ic=1,ncut
-ccc                              aclose(:)=0
-ccc
-ccc      call krige(ix,iy,iz,ic,MAXCTX,MAXCTY,MAXCTZ,MAXKR1,
-ccc     + MAXROT,MAXDAT,MXCUT,MAXKR2,MAXNOD,MAXCUT,MAXXYZ,MAXNST,idbg,
-ccc     + imbsim,ivtype,ktype,ldbg,mik,nclose,ncnode,nctx,ncty,nctz, 
-ccc     + xx,yy,zz,cdf(ic),ccdf(ic),atnode,softdat,vr,vra,x,y,z,icnode,
-ccc     + iznode,iynode,ixnode,it,nst,aclose,cnodex,cnodey,cnodez,
-ccc     + cnodev,cnodet,covtab,thres,aa,c0,cc,cmax,close,beez,r,rr,s,a,
-ccc     + rotmat)
-ccc
-ccc                        end do
-cccc
-cccc Correct order relations:
-cccc
-ccc
-ccc                        call ordrel(ivtype,ncut,ccdf,ccdfo,nviol,aviol,
-ccc     +                              xviol)
-ccc
-cccc
-cccc Draw from the local distribution:
-cccc
-ccc
-ccc                        call beyond(ivtype,ncut,thres,ccdfo,ng,gcut,
-ccc     +                              gcdf,zmin,zmax,ltail,ltpar,middle,
-ccc     +                              mpar,utail,utpar,zval,cdfval,ierr)
-ccc
-cccc
-cccc Write some debugging information:
-cccc
-ccc
-cccc                        if(idbg.ge.3) then
-cccc                              do ic=1,ncut
-cccc                              write(ldbg,202) ccdf(ic),ccdfo(ic)
-cccc 202                          format('  CDF (original and fixed)',2f7.4)
-cccc                              end do
-cccc                        endif
-ccc                  endif
-ccc
-ccc                  sim(index) = zval
-ccc
-cccc
-cccc END MAIN LOOP OVER NODES:
-cccc
-ccc 300         continue
-ccc
-ccc            tmp(index) = 0.0 
-ccc
-ccc           end do
 
            end if
 
@@ -2413,8 +2063,6 @@ c
             do ic=1,ncut
                   ccdf(ic) = 0.0
             end do
-
-#ifndef GRIDFS
 
             call system_clock(clock_start,clock_rate,
      +                        clock_max)
@@ -2445,45 +2093,6 @@ c
             call system_clock(clock_stop,clock_rate,clock_max)
             print *,'TIME (output)=',
      +    real(clock_stop-clock_start,kind=8)/real(clock_rate,kind=8) 
-
-
-#else
-cc Write to Gridfs with openmp
-            var_name = ' '
-#ifdef _OPENMP
-
-                  write(outfltmp,"(A40,I3)") trim(outfl(1:40)),
-     +                  loutThreads(isim)
-                  outfltmp = adjustl(trim(outfltmp))
-
-                  current_sim = ' '
-                  threadId_name = ' '
-                  status = HOSTNM(hostname)
-                  write(threadId_name,'(I5)') threadId+1
-                  write(current_sim,'(I5)') isim
-                  var_name = trim(outfltmp) // '_' //
-     +                       trim(adjustl(hostname)) //'_' //
-     +                       trim(adjustl(threadId_name)) //'_' //
-     +                       trim(adjustl(current_sim)) //
-     +                      '.out' //CHAR(0)
-                  call filesystem_save(sim,size(sim)*4,
-     +                                 trim(adjustl(var_name)),
-     +                                 trim(adjustl(gridfs_uri)))
-#else
-cc Write to Gridfs without openmp
-                  current_sim = ' '
-                  status = HOSTNM(hostname)
-                  write(current_sim,'(I5)') isim
-                  var_name = trim(adjustl(outfl(1:40))) // '_' //
-     +                       trim(adjustl(hostname)) //'_' //
-     +                       trim(adjustl(current_sim)) //
-     +                      '.out' //CHAR(0)
-                  call filesystem_save(sim,size(sim)*4,
-     +                                 trim(adjustl(var_name)),
-     +                                 trim(adjustl(gridfs_uri)))
-#endif
-#endif
-
 
 c
 c END MAIN LOOP OVER SIMULATIONS:
