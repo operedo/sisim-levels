@@ -1653,8 +1653,12 @@ c
             tmp(index) = 0.0 
 
             end do
-
             
+            call system_clock(clock_stop,clock_rate,clock_max)
+            print *,'TIME (make levels1)=',
+     +    real(clock_stop-clock_start,kind=8)/real(clock_rate,kind=8) 
+
+            call system_clock(clock_start,clock_rate,clock_max)
 
             levelThreshold = 0
             numberOfLevels = numberOfLevels + 1
@@ -1682,7 +1686,7 @@ c
 
 
             call system_clock(clock_stop,clock_rate,clock_max)
-            print *,'TIME (make levels)=',
+            print *,'TIME (make levels2)=',
      +    real(clock_stop-clock_start,kind=8)/real(clock_rate,kind=8) 
 
 

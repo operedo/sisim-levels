@@ -18,14 +18,15 @@
 #exit 0
 
 #SIZE=huge
-SIZE=large
+#SIZE=large
+SIZE=extreme
 WORKING_DIR=/home/$USER/dev/sisim-levels 
 cd ${WORKING_DIR}
 
 for intent in 1
 do
 export OMP_SCHEDULE="static"
-for i in 16 8 4 2 1
+for i in 16
 #for i in 16
 do
 	export OMP_NUM_THREADS=${i}
