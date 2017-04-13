@@ -4,7 +4,7 @@ FC=gfortran-4.8
 NVCC=/usr/local/cuda-5.5/bin/nvcc
 #FFLAGS= -cpp -Wall -pedantic -O3
 #FFLAGS= -cpp -march=native -mtune=native -O3 
-FFLAGS= -cpp -O3 
+FFLAGS= -cpp -O2 -ffast-math -ftree-vectorize  
 CFLAGS= -O3 -std=c99
 NVFLAGS= -O3 -arch=sm_20
 

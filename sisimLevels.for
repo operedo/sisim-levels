@@ -94,7 +94,7 @@ c      integer,allocatable :: ixnode(:),iynode(:),iznode(:),nisb(:),
      +                       order(:),icnode(:),ixsbtosr(:),iysbtosr(:),
      +                       izsbtosr(:),it(:),nst(:),nviol(:)
 
-      integer, allocatable:: aclose(:),lock(:)
+      integer, allocatable:: aclose(:)
 
       real*8,allocatable  :: rotmat(:,:,:)
       logical,allocatable :: atnode(:),softdat(:)
@@ -165,6 +165,7 @@ c      integer,allocatable :: cnodeidIndex(:,:,:)
       integer numberOfLevels
       integer, allocatable ::level(:),
      +  indexSort(:)
+      integer, allocatable:: lock(:)
 c,arrayIndex(:) 
 c, levelSort(:)
       real,allocatable :: cdfvalIndex(:)
