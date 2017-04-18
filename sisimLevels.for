@@ -1692,6 +1692,12 @@ c
 
 
             call system_clock(clock_start,clock_rate,clock_max)
+
+            do lev=1,numberOfLevels
+               print *,lev,levelCount(lev+1)
+            end do
+            stop
+
 c
 c Initialize (again) the simulation:
 c
