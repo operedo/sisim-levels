@@ -1608,11 +1608,7 @@ c                       end do
                   cnodeid(:)=-1
                   ncnode=0
 
-c            call srchndUnroll(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
-c              call srchndList(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
-c                  call srchnd(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
-c       call srchndvectorized(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
-c       call srchndvectorized2(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
+c           call srchndPushOpt(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
               call srchndPush(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
      +        maxsec,nctx,ncty,nctz,nlooku,nodmax,nx,ny,nz,UNEST,
      +        xmn,ymn,zmn,xsiz,ysiz,zsiz,icnode,ixnode,iynode,iznode,
@@ -1693,10 +1689,10 @@ c
 
             call system_clock(clock_start,clock_rate,clock_max)
 
-            do lev=1,numberOfLevels
-               print *,lev,levelCount(lev+1)
-            end do
-            stop
+c            do lev=1,numberOfLevels
+c               print *,lev,levelCount(lev+1)
+c            end do
+c            stop
 
 c
 c Initialize (again) the simulation:
