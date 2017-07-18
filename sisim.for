@@ -1119,6 +1119,14 @@ c-----------------------------------------------------------------------
       include  'sisim.inc'
       real      ntviol,atviol
       real*8    acorni
+
+      integer clock_max
+      integer clock_rate
+      integer clock_start
+      integer clock_stop
+
+
+
 c
 c Set up the rotation/anisotropy matrices that are needed for the
 c variogram and search:
@@ -1263,8 +1271,14 @@ c
 c
 c MAIN LOOP OVER ALL THE NODES:
 c
+            call system_clock(clock_start,clock_rate,clock_max)
             do in=1,nxyz
-                  if((int(in/irepo)*irepo).eq.in) write(*,104) in
+                  if((int(in/irepo)*irepo).eq.in) then
+                     write(*,104) in
+            call system_clock(clock_stop,clock_rate,clock_max)
+            print *,'TIME ',
+     +    real(clock_stop-clock_start,kind=8)/real(clock_rate,kind=8) 
+                  end if
  104              format('   currently on node ',i9)
 c                  index = int(order(in)+0.5)
                   index = order(in)

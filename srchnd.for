@@ -127,15 +127,15 @@ c
       ncsec  = 0
 
 
-      do il=1,nlooku
+      do 2 il=1,nlooku
 
             if(ncnode.eq.nodmax) return
             i = ix + (int(ixnode(il))-nctx-1)
-            if(i.lt.1.or.i.gt.nx) go to 1
+            if(i.lt.1.or.i.gt.nx) go to 2
             j = iy + (int(iynode(il))-ncty-1)
-            if(j.lt.1.or.j.gt.ny) go to 1
+            if(j.lt.1.or.j.gt.ny) go to 2
             k = iz + (int(iznode(il))-nctz-1)
-            if(k.lt.1.or.k.gt.nz) go to 1
+            if(k.lt.1.or.k.gt.nz) go to 2
 
             indexloc = (k-1)*nx*ny + (j-1)*nx + i
 
@@ -144,9 +144,7 @@ c
                   cnodeid(ncnode) = indexloc
                   icnode(ncnode) = il
             endif
- 1          continue
-      end do
-
+ 2    continue
 
 c      do il=1,nlooku,2
 c
@@ -191,7 +189,8 @@ c
       return
       end
 
-     subroutine srchndPushOpt(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,ncnode,
+      subroutine srchndPushOpt(ix,iy,iz,MAXNOD,MAXXYZ,MAXORD,MXYZ,
+     +        ncnode,
      +        maxsec,nctx,ncty,nctz,nlooku,nodmax,nx,ny,nz,UNEST,
      +        xmn,ymn,zmn,xsiz,ysiz,zsiz,icnode,ixnode,iynode,iznode,
      +        cnodex,cnodey,cnodez,cnodev,cnodet,tmp,sim,cnodeid)
@@ -208,7 +207,7 @@ c
      + cnodev(MAXNOD),cnodet(MAXNOD),tmp(MAXORD),sim(MXYZ)
       integer cnodeid(MAXNOD)
 
-      integer i,j,k,il,indexloc,ncsec
+      integer i,j,k,il,indexloc,ncsec,ind
 c
 c Consider all the nearby nodes until enough have been found:
 c
@@ -221,7 +220,7 @@ c
             k = iz + (int(iznode(il))-nctz-1)
             if(i.lt. 1.or.j.lt. 1.or.k.lt. 1) go to 2
             if(i.gt.nx.or.j.gt.ny.or.k.gt.nz) go to 2
-            ind = i + (j-1)*nx + (k-1)*nxy
+            ind = i + (j-1)*nx + (k-1)*nx*ny
             if(sim(ind).gt.UNEST) then
                   ncnode = ncnode + 1
                   cnodeid(ncnode) = ind
@@ -234,7 +233,7 @@ c
             k = iz + (int(iznode(il))-nctz-1)
             if(i.lt. 1.or.j.lt. 1.or.k.lt. 1) go to 3
             if(i.gt.nx.or.j.gt.ny.or.k.gt.nz) go to 3
-            ind = i + (j-1)*nx + (k-1)*nxy
+            ind = i + (j-1)*nx + (k-1)*nx*ny
             if(sim(ind).gt.UNEST) then
                   ncnode = ncnode + 1
                   cnodeid(ncnode) = ind
